@@ -16,12 +16,15 @@ namespace iovigi.com.web.Data.Models
         [Required]
         public string Body { get; set; }
 
-        public string Description { get; set; }
-
-        public string ShortDescription { get; set; }
+        [Required]
+        public string ShortBody { get; set; }
 
         public virtual ICollection<PostCategory> Categories { get; set; }
 
+        public virtual ICollection<PostTag> Tags { get; set; }
+
         public virtual ICollection<PostKeyword> Keywords { get; set; }
+
+        public virtual ICollection<PostComment> Comments { get; set; }
     }
 }

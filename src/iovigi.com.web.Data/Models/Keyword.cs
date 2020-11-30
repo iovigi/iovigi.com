@@ -8,5 +8,6 @@ namespace iovigi.com.web.Data.Models
         public string Name { get; set; }
 
         public virtual ICollection<PostKeyword> Posts { get; set; }
+        public virtual ICollection<PageKeyword> Pages { get; set; }
     }
 }
