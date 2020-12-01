@@ -18,5 +18,7 @@ namespace iovigi.com.web.Data.Models
         public virtual ICollection<PageTag> Tags { get; set; }
         public virtual ICollection<PageKeyword> Keywords { get; set; }
         public virtual ICollection<PageComment> Comments { get; set; }
+
+        public ICollection<MenuPage> Menus { get; set; }
     }
 }
