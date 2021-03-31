@@ -10,8 +10,12 @@ namespace iovigi.com.web.Data.Models
         public string Title { get; set; }
         [Required]
         public bool ShowTitle { get; set; }
+        public ICollection<MenuItem> MenuItems { get; set; }
+        public MenuType MenuType { get; set; }
+    }
 
-        public ICollection<MenuPage> Pages { get; set; }
-        public ICollection<MenuPost> Posts { get; set; }
+    public enum MenuType
+    {
+        Top = 1
     }
 }

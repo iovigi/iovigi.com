@@ -26,7 +26,5 @@ namespace iovigi.com.web.Data.Models
         public virtual ICollection<PostKeyword> Keywords { get; set; }
 
         public virtual ICollection<PostComment> Comments { get; set; }
-
-        public ICollection<MenuPost> Menus { get; set; }
     }
 }

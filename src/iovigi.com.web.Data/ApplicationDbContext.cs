@@ -78,27 +78,9 @@ namespace iovigi.com.web.Data
                 .HasOne(x => x.Page)
                 .WithMany(x => x.Comments);
 
-            builder.Entity<MenuPage>()
+            builder.Entity<MenuItem>()
                 .HasOne(x => x.Menu)
-                .WithMany(x => x.Pages);
-
-            builder.Entity<MenuPage>()
-                .HasOne(x => x.Page)
-                .WithMany(x => x.Menus);
-
-            builder.Entity<MenuPage>()
-                .HasKey(x => new { x.MenuId, x.PageId });
-
-            builder.Entity<MenuPost>()
-                .HasOne(x => x.Menu)
-                .WithMany(x => x.Posts);
-
-            builder.Entity<MenuPost>()
-                .HasOne(x => x.Post)
-                .WithMany(x => x.Menus);
-
-            builder.Entity<MenuPost>()
-                .HasKey(x => new { x.MenuId, x.PostId });
+                .WithMany(x => x.MenuItems);
         }
     }
 }
