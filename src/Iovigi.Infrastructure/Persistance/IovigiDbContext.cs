@@ -1,12 +1,13 @@
-﻿using Iovigi.Data.Models;
+﻿using Iovigi.Common;
+using Iovigi.Data.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace Iovigi.Data
+namespace Iovigi.Infrastructure.Persistance
 {
-    public class ApplicationDbContext : IdentityDbContext<User>
+    public class IovigiDbContext : IdentityDbContext<User>, IDbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        public IovigiDbContext(DbContextOptions<IovigiDbContext> options)
             : base(options)
         {
         }
