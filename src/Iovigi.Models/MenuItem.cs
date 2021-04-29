@@ -8,6 +8,7 @@ namespace Iovigi.Models
 
         public int? PageId { get; set; }
         public int? PostId { get; set; }
+        public int? CategoryId { get; set; }
         public int MenuId { get; set; }
         public Menu Menu { get; set; }
         public int? ParentMenuItemId { get; set; }

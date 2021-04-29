@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Iovigi.Infrastructure.Extensions;
+using Iovigi.Web.Middleware;
 
 namespace Iovigi.Web
 {
@@ -35,6 +36,7 @@ namespace Iovigi.Web
             app.UseSpaStaticFiles();
 
             app.UseHttpsRedirection()
+               .UseValidationExceptionHandler()
                .UseStaticFiles()
                .UseAuthentication()
                .UseRouting()

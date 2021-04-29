@@ -12,9 +12,11 @@ using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 using System.Text;
 using Microsoft.OpenApi.Models;
-using Iovigi.Infrastructure.Filters;
 using Iovigi.Infrastructure.Services;
 using Iovigi.Identity;
+using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Mvc;
+using Iovigi.Infrastructure.Behaviours;
 
 namespace Iovigi.Infrastructure.Extensions
 {
@@ -28,10 +30,12 @@ namespace Iovigi.Infrastructure.Extensions
             .AddIdentity(configuration)
             .AddSwagger()
             .AddMediatR(Assembly.GetExecutingAssembly())
+            .AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehavior<,>))
             .AddApplicationServices()
             .AddInitialData()
-            .AddApiControllers();
-            
+            .AddAutoMapper(Assembly.GetExecutingAssembly())
+            .AddWebComponents();
+
 
 
         private static IServiceCollection AddDatabase(
@@ -100,11 +104,21 @@ namespace Iovigi.Infrastructure.Extensions
                     });
             });
 
-        private static void AddApiControllers(this IServiceCollection services)
-         => services
-             .AddControllers(options => options
-                 .Filters
-                 .Add<ModelOrNotFoundActionFilter>());
+        private static IServiceCollection AddWebComponents(this IServiceCollection services)
+        {
+            services.AddControllers()
+                    .AddFluentValidation(validation => validation
+                        .RegisterValidatorsFromAssemblyContaining<Result>())
+                    .AddNewtonsoftJson();
+
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
+
+
+            return services;
+        }
 
         private static IServiceCollection AddApplicationServices(this IServiceCollection services)
         => services
