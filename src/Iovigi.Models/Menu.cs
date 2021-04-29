@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using Iovigi.Models.BaseModel;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Iovigi.Data.Models
+namespace Iovigi.Models
 {
-    public class Menu
+    public class Menu : DeletableEntity
     {
         public int Id { get; set; }
         [Required]

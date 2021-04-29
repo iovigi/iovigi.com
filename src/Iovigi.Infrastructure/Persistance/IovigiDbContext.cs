@@ -1,15 +1,23 @@
 ﻿using Iovigi.Common;
-using Iovigi.Data.Models;
+using Iovigi.Models;
+using Iovigi.Models.BaseModel;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Iovigi.Infrastructure.Persistance
 {
-    public class IovigiDbContext : IdentityDbContext<User>, IDbContext
+    internal class IovigiDbContext : IdentityDbContext<User>, IDbContext
     {
-        public IovigiDbContext(DbContextOptions<IovigiDbContext> options)
+        private readonly ICurrentUser currentUser;
+
+        public IovigiDbContext(DbContextOptions<IovigiDbContext> options, ICurrentUser currentUser)
             : base(options)
         {
+            this.currentUser = currentUser;
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -83,5 +91,56 @@ namespace Iovigi.Infrastructure.Persistance
                 .HasOne(x => x.Menu)
                 .WithMany(x => x.MenuItems);
         }
+
+        public override int SaveChanges(bool acceptAllChangesOnSuccess)
+        {
+            this.ApplyAuditInformation();
+
+            return base.SaveChanges(acceptAllChangesOnSuccess);
+        }
+
+        public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new CancellationToken())
+        {
+            this.ApplyAuditInformation();
+
+            return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+        }
+
+        private void ApplyAuditInformation()
+          => this.ChangeTracker
+              .Entries()
+              .ToList()
+              .ForEach(entry =>
+              {
+                  var userName = this.currentUser.UserName;
+
+                  if (entry.Entity is IDeletableEntity deletableEntity)
+                  {
+                      if (entry.State == EntityState.Deleted)
+                      {
+                          deletableEntity.DeletedOn = DateTime.UtcNow;
+                          deletableEntity.DeletedBy = userName;
+                          deletableEntity.IsDeleted = true;
+
+                          entry.State = EntityState.Modified;
+
+                          return;
+                      }
+                  }
+
+                  if (entry.Entity is IEntity entity)
+                  {
+                      if (entry.State == EntityState.Added)
+                      {
+                          entity.CreatedOn = DateTime.UtcNow;
+                          entity.CreatedBy = userName;
+                      }
+                      else if (entry.State == EntityState.Modified)
+                      {
+                          entity.ModifiedOn = DateTime.UtcNow;
+                          entity.ModifiedBy = userName;
+                      }
+                  }
+              });
     }
 }

@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using Iovigi.Models.BaseModel;
+using System.Collections.Generic;
 
-namespace Iovigi.Data.Models
+namespace Iovigi.Models
 {
-    public class Keyword
+    public class Keyword : DeletableEntity
     {
         public int Id { get; set; }
         public string Name { get; set; }

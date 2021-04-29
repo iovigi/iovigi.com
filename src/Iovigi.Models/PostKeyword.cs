@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Iovigi.Models.BaseModel;
+using System.ComponentModel.DataAnnotations;
 
-namespace Iovigi.Data.Models
+namespace Iovigi.Models
 {
-    public class PostKeyword
+    public class PostKeyword : DeletableEntity
     {
         [Required]
         public int PostId { get; set; }

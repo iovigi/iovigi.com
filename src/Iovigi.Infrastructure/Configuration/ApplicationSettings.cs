@@ -1,6 +1,6 @@
 ﻿namespace Iovigi.Infrastructure.Configuration
 {
-    public class ApplicationSettings
+    internal class ApplicationSettings
     {
         public ApplicationSettings() => this.Secret = default!;
 

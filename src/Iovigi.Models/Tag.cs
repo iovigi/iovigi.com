@@ -1,11 +1,9 @@
-﻿using System;
+﻿using Iovigi.Models.BaseModel;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace Iovigi.Data.Models
+namespace Iovigi.Models
 {
-    public class Tag
+    public class Tag : DeletableEntity
     {
         public int Id { get; set; }
         public string Name { get; set; }

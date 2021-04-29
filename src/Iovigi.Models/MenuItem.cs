@@ -1,6 +1,8 @@
-﻿namespace Iovigi.Data.Models
+﻿using Iovigi.Models.BaseModel;
+
+namespace Iovigi.Models
 {
-    public class MenuItem
+    public class MenuItem : DeletableEntity
     {
         public int Id { get; set; }
 

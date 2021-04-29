@@ -1,11 +1,10 @@
-﻿using System;
+﻿using Iovigi.Models.BaseModel;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
-namespace Iovigi.Data.Models
+namespace Iovigi.Models
 {
-    public class Page
+    public class Page : DeletableEntity
     {
         public int Id { get; set; }
 

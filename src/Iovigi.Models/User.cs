@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace Iovigi.Data.Models
+namespace Iovigi.Models
 {
     public class User : IdentityUser
     {

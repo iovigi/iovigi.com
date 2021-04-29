@@ -1,5 +1,5 @@
 ﻿using Iovigi.Common;
-using Iovigi.Data.Models;
+using Iovigi.Models;
 using Iovigi.Infrastructure.Configuration;
 using Iovigi.Infrastructure.Persistance;
 using MediatR;
@@ -11,18 +11,27 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 using System.Text;
+using Microsoft.OpenApi.Models;
+using Iovigi.Infrastructure.Filters;
+using Iovigi.Infrastructure.Services;
+using Iovigi.Identity;
 
-namespace Iovigi.Infrastructure
+namespace Iovigi.Infrastructure.Extensions
 {
-    public static class InfrastructureConfiguration
+    public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddInfrastructure(
+        public static void AddServiceCollection(
         this IServiceCollection services,
         IConfiguration configuration)
         => services
             .AddDatabase(configuration)
             .AddIdentity(configuration)
-            .AddMediatR(Assembly.GetExecutingAssembly());
+            .AddSwagger()
+            .AddMediatR(Assembly.GetExecutingAssembly())
+            .AddApplicationServices()
+            .AddInitialData()
+            .AddApiControllers();
+            
 
 
         private static IServiceCollection AddDatabase(
@@ -75,10 +84,40 @@ namespace Iovigi.Infrastructure
                     };
                 });
 
-            //services.AddTransient<IIdentity, IdentityService>();
-            //services.AddTransient<IJwtTokenGenerator, JwtTokenGeneratorService>();
-
             return services;
         }
+
+
+        private static IServiceCollection AddSwagger(this IServiceCollection services)
+        => services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc(
+                    "v1",
+                    new OpenApiInfo
+                    {
+                        Title = "My Iovigi API",
+                        Version = "v1"
+                    });
+            });
+
+        private static void AddApiControllers(this IServiceCollection services)
+         => services
+             .AddControllers(options => options
+                 .Filters
+                 .Add<ModelOrNotFoundActionFilter>());
+
+        private static IServiceCollection AddApplicationServices(this IServiceCollection services)
+        => services
+            .AddScoped<ICurrentUser, CurrentUserService>()
+            .AddScoped<IJwtTokenGenerator, JwtTokenGeneratorService>();
+
+        private static IServiceCollection AddInitialData(this IServiceCollection services)
+        => services
+            .Scan(scan => scan
+                .FromCallingAssembly()
+                .AddClasses(classes => classes
+                    .AssignableTo(typeof(IInitialData)))
+                .AsImplementedInterfaces()
+                .WithTransientLifetime());
     }
 }

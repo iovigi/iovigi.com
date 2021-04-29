@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30621.155
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Iovigi.Data", "Iovigi.Data\Iovigi.Data.csproj", "{36C08DA8-683F-463F-B29F-BA226242A608}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Iovigi.Models", "Iovigi.Models\Iovigi.Models.csproj", "{36C08DA8-683F-463F-B29F-BA226242A608}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Iovigi.Web", "Iovigi.Web\Iovigi.Web.csproj", "{C24FD2C8-2920-45F2-8ABA-E49189003105}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iovigi.Infrastructure", "Iovigi.Infrastructure\Iovigi.Infrastructure.csproj", "{230EC5C7-8DC4-4985-A626-CCA91EFC07DC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Iovigi.Infrastructure", "Iovigi.Infrastructure\Iovigi.Infrastructure.csproj", "{230EC5C7-8DC4-4985-A626-CCA91EFC07DC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iovigi.Common", "Iovigi.Common\Iovigi.Common.csproj", "{35A1B427-AD3E-45F5-AA40-127D6037E490}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Iovigi.Common", "Iovigi.Common\Iovigi.Common.csproj", "{35A1B427-AD3E-45F5-AA40-127D6037E490}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iovigi.Identity", "Iovigi.Identity\Iovigi.Identity.csproj", "{A7B11AFF-2096-4880-A58A-984B56C95277}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{35A1B427-AD3E-45F5-AA40-127D6037E490}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{35A1B427-AD3E-45F5-AA40-127D6037E490}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{35A1B427-AD3E-45F5-AA40-127D6037E490}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7B11AFF-2096-4880-A58A-984B56C95277}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7B11AFF-2096-4880-A58A-984B56C95277}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7B11AFF-2096-4880-A58A-984B56C95277}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7B11AFF-2096-4880-A58A-984B56C95277}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

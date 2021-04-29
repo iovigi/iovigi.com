@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Iovigi.Infrastructure;
+using Iovigi.Infrastructure.Extensions;
 
 namespace Iovigi.Web
 {
@@ -20,7 +20,7 @@ namespace Iovigi.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
             => services
-                .AddInfrastructure(this.Configuration);
+                .AddServiceCollection(this.Configuration);
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -28,6 +28,8 @@ namespace Iovigi.Web
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+
+                app.UseSwaggerUI();
             }
 
             app.UseSpaStaticFiles();
@@ -43,6 +45,7 @@ namespace Iovigi.Web
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
                 })
+               .Initialize()
                .UseSpa(spa =>
                 {
                     spa.Options.SourcePath = "ClientApp";

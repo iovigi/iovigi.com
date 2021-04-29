@@ -1,6 +1,8 @@
-﻿namespace Iovigi.Data.Models
+﻿using Iovigi.Models.BaseModel;
+
+namespace Iovigi.Models
 {
-    public class PostTag
+    public class PostTag : DeletableEntity
     {
         public int PostId { get; set; }
         public virtual Post Post { get; set; }
