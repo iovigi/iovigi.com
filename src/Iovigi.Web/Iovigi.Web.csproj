@@ -22,10 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Iovigi.Infrastructure\Iovigi.Infrastructure.csproj" />
   </ItemGroup>
 
