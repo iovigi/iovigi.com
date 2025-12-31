@@ -2,8 +2,8 @@ import mongoose from 'mongoose';
 
 const PostSchema = new mongoose.Schema({
     title: {
-        type: String,
-        required: true,
+        en: { type: String, required: true },
+        bg: { type: String }
     },
     slug: {
         type: String,
@@ -11,11 +11,16 @@ const PostSchema = new mongoose.Schema({
         unique: true,
     },
     content: {
-        type: String, // HTML content
-        required: true,
+        en: { type: String },
+        bg: { type: String }
     },
     excerpt: {
-        type: String,
+        en: { type: String },
+        bg: { type: String }
+    },
+    isVisible: {
+        en: { type: Boolean, default: true },
+        bg: { type: Boolean, default: false }
     },
     image: {
         type: String, // Path to image
@@ -26,4 +31,8 @@ const PostSchema = new mongoose.Schema({
     },
 }, { timestamps: true });
 
-export default mongoose.models.Post || mongoose.model('Post', PostSchema);
+if (mongoose.models.Post) {
+    delete mongoose.models.Post;
+}
+
+export default mongoose.model('Post', PostSchema);

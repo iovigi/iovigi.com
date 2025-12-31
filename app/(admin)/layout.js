@@ -60,6 +60,12 @@ export default function AdminLayout({ children }) {
                                             <p>Pages</p>
                                         </a>
                                     </li>
+                                    <li className="nav-item">
+                                        <a href="/admin/comments" className="nav-link">
+                                            <i className="nav-icon fas fa-comments"></i>
+                                            <p>Comments</p>
+                                        </a>
+                                    </li>
                                 </ul>
                             </nav>
                         </div>

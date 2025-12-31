@@ -3,18 +3,68 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import RichTextEditor from '@/app/components/RichTextEditor';
+import LocalizationTabs from '@/components/LocalizationTabs';
 
 export default function EditPageForm({ page }) {
     const router = useRouter();
+    const [activeTab, setActiveTab] = useState('en');
+
+    // Helper to ensure we have the correct structure
+    const getLocalizedField = (field, fallback = '') => {
+        if (!field) return { en: fallback, bg: fallback };
+        if (typeof field === 'string') return { en: field, bg: fallback }; // Legacy fallback
+        return {
+            en: field.en || fallback,
+            bg: field.bg || fallback
+        };
+    };
+
+    const getLocalizedBoolean = (field, fallback = true) => {
+        if (typeof field === 'boolean') return { en: field, bg: false };
+        if (!field) return { en: fallback, bg: false };
+        return {
+            en: field.en !== undefined ? field.en : fallback,
+            bg: field.bg !== undefined ? field.bg : false
+        };
+    }
+
     const [formData, setFormData] = useState({
-        title: page.title,
+        title: getLocalizedField(page.title),
         slug: page.slug,
-        content: page.content,
+        content: getLocalizedField(page.content),
         showInMenu: page.showInMenu,
         sortOrder: page.sortOrder,
+        isVisible: getLocalizedBoolean(page.isVisible, true)
     });
     const [error, setError] = useState('');
 
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+    // Handle localized text changes
+    const handleLocalizedChange = (e, field) => {
+        setFormData({
+            ...formData,
+            [field]: { ...formData[field], [activeTab]: e.target.value }
+        });
+    };
+
+    // Handle localized content (RichText)
+    const handleLocalizedContentChange = (content, field) => {
+        setFormData({
+            ...formData,
+            [field]: { ...formData[field], [activeTab]: content }
+        });
+    };
+
+    // Handle localized boolean (checkbox)
+    const handleLocalizedCheckboxChange = (e, field) => {
+        setFormData({
+            ...formData,
+            [field]: { ...formData[field], [activeTab]: e.target.checked }
+        });
+    };
+
+    // Handle global changes
     const handleChange = (e) => {
         const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
         setFormData({ ...formData, [e.target.name]: value });
@@ -42,8 +92,6 @@ export default function EditPageForm({ page }) {
             setError(err.message);
         }
     };
-
-    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
     const handleDeleteClick = () => {
         setShowDeleteConfirm(true);
@@ -90,26 +138,56 @@ export default function EditPageForm({ page }) {
                             )}
 
                             <div className="form-group">
-                                <label>Title</label>
-                                <input type="text" className="form-control" name="title" value={formData.title} onChange={handleChange} required />
-                            </div>
-                            <div className="form-group">
                                 <label>Slug</label>
                                 <input type="text" className="form-control" name="slug" value={formData.slug} onChange={handleChange} required />
                             </div>
+
                             <div className="form-group">
                                 <div className="custom-control custom-checkbox">
                                     <input className="custom-control-input" type="checkbox" id="showInMenu" name="showInMenu" checked={formData.showInMenu} onChange={handleChange} />
                                     <label htmlFor="showInMenu" className="custom-control-label">Show in Menu</label>
                                 </div>
                             </div>
+
                             <div className="form-group">
                                 <label>Sort Order</label>
                                 <input type="number" className="form-control" name="sortOrder" value={formData.sortOrder} onChange={handleChange} />
                             </div>
+
+                            <hr />
+                            <LocalizationTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+
                             <div className="form-group">
-                                <label>Content</label>
-                                <RichTextEditor value={formData.content} onChange={(content) => setFormData({ ...formData, content })} />
+                                <div className="custom-control custom-switch">
+                                    <input
+                                        type="checkbox"
+                                        className="custom-control-input"
+                                        id={`isVisible_${activeTab}`}
+                                        checked={formData.isVisible[activeTab]}
+                                        onChange={(e) => handleLocalizedCheckboxChange(e, 'isVisible')}
+                                    />
+                                    <label className="custom-control-label" htmlFor={`isVisible_${activeTab}`}>Visible in {activeTab === 'en' ? 'English' : 'Bulgarian'}</label>
+                                </div>
+                            </div>
+
+                            <div className="form-group">
+                                <label>Title ({activeTab.toUpperCase()})</label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    value={formData.title[activeTab]}
+                                    onChange={(e) => handleLocalizedChange(e, 'title')}
+                                    required={activeTab === 'en'}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label>Content ({activeTab.toUpperCase()})</label>
+                                <RichTextEditor
+                                    key={activeTab}
+                                    value={formData.content[activeTab]}
+                                    onChange={(content) => handleLocalizedContentChange(content, 'content')}
+                                />
                             </div>
                         </div>
                         <div className="card-footer">

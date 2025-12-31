@@ -14,6 +14,15 @@ const CommentSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    locale: {
+        type: String,
+        default: 'en',
+    }
 }, { timestamps: true });
 
-export default mongoose.models.Comment || mongoose.model('Comment', CommentSchema);
+// Force recompilation to pick up schema changes
+if (mongoose.models.Comment) {
+    delete mongoose.models.Comment;
+}
+
+export default mongoose.model('Comment', CommentSchema);

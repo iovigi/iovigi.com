@@ -43,7 +43,14 @@ export default async function PageList() {
                                     <tbody>
                                         {pages.map((page) => (
                                             <tr key={page._id}>
-                                                <td>{page.title}</td>
+                                                <td>
+                                                    {page.title && page.title.en ? page.title.en : "No Title"}
+                                                    <br />
+                                                    <small className="text-muted">
+                                                        {page.isVisible && page.isVisible.en ? <span className="badge badge-success mr-1">EN</span> : <span className="badge badge-secondary mr-1">EN</span>}
+                                                        {page.isVisible && page.isVisible.bg ? <span className="badge badge-success">BG</span> : <span className="badge badge-secondary">BG</span>}
+                                                    </small>
+                                                </td>
                                                 <td>{page.slug}</td>
                                                 <td>{page.showInMenu ? 'Yes' : 'No'}</td>
                                                 <td>

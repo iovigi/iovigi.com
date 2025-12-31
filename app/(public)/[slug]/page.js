@@ -17,10 +17,13 @@ export async function generateMetadata({ params }) {
             title: 'Page Not Found',
         }
     }
+    const title = page.title?.en || (typeof page.title === 'string' ? page.title : 'Untitled');
     return {
-        title: page.title,
+        title: title,
     }
 }
+
+import SinglePageContent from '@/components/SinglePageContent';
 
 export default async function DynamicPage({ params }) {
     const { slug } = await params;
@@ -30,20 +33,5 @@ export default async function DynamicPage({ params }) {
         notFound();
     }
 
-    return (
-        <section id="content">
-            <div className="container">
-                <div className="row">
-                    <div className="col-md-12">
-                        <div className="primary">
-                            <div className="blog-title">
-                                <h2>{page.title}</h2>
-                            </div>
-                            <div className="content" dangerouslySetInnerHTML={{ __html: page.content }}></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    );
+    return <SinglePageContent page={page} />;
 }

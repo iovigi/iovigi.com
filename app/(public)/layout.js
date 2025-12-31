@@ -1,7 +1,11 @@
 import Script from 'next/script';
 import dbConnect from '@/lib/db';
 import Page from '@/models/Page';
-import SmartMenusLoader from '../components/SmartMenusLoader';
+import SmartMenusLoader from '@/app/components/SmartMenusLoader';
+import '../globals.css';
+import ClientLayout from '../ClientLayout';
+import PublicNavbar from '@/components/PublicNavbar';
+import PublicFooter from '@/components/PublicFooter';
 
 export const metadata = {
     title: {
@@ -37,55 +41,38 @@ export default async function RootLayout({ children }) {
                 <link href="/css/font-awesome.min.css" rel="stylesheet" />
                 <link href="/style.css" rel="stylesheet" />
                 <link href="/css/responsive.css" rel="stylesheet" />
-                <link href='http://fonts.googleapis.com/css?family=Roboto:400,100,700' rel='stylesheet' type='text/css' />
-                <link href='http://fonts.googleapis.com/css?family=Droid+Sans' rel='stylesheet' type='text/css' />
+                <link href="/css/stars.css" rel="stylesheet" />
+                <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;700&display=swap" rel="stylesheet" />
             </head>
-            <body>
-                <div id="preloader">
-                    <div id="status">&nbsp;</div>
-                </div>
-
-                <header id="header" className="header navbar-fixed-top">
-                    <div className="container">
-                        <div className="navbar" role="navigation">
-                            <div className="navbar-header">
-                                <button type="button" className="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                                    <span className="sr-only">Toggle navigation</span>
-                                    <span className="icon-bar"></span>
-                                    <span className="icon-bar"></span>
-                                    <span className="icon-bar"></span>
-                                </button>
-                                <a className="navbar-brand" href="/"><img src="/images/logo.png" alt="logo" /></a>
-                            </div>
-                            <div className="navbar-collapse collapse">
-                                <ul className="nav navbar-nav right">
-                                    <li className="active"><a href="/">Home</a></li>
-                                    {pages.map(page => (
-                                        <li key={page._id}><a href={`/${page.slug}`}>{page.title}</a></li>
-                                    ))}
-                                </ul>
-                            </div>
-                        </div>
+            <body suppressHydrationWarning={true}>
+                <ClientLayout>
+                    <div id="space-background" style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        zIndex: -1,
+                        backgroundImage: 'radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%)',
+                        backgroundSize: '100% 100%',
+                        backgroundAttachment: 'fixed',
+                        overflow: 'hidden'
+                    }}>
+                        <div className="stars"></div>
+                        <div className="stars2"></div>
+                        <div className="stars3"></div></div>
+                    <div id="preloader">
+                        <div id="status">&nbsp;</div>
                     </div>
-                </header>
 
-                {children}
+                    <PublicNavbar pages={pages} />
 
-                <footer id="footer" className="footer">
-                    <div className="container">
-                        <div className="footer-nav">
-                            <ul className="nav navbar-nav">
-                                <li><a href="/">Home</a></li>
-                                {pages.map(page => (
-                                    <li key={page._id}><a href={`/${page.slug}`}>{page.title}</a></li>
-                                ))}
-                            </ul>
-                        </div>
-                        <div className="copyright">
-                            <span></span>
-                        </div>
-                    </div>
-                </footer>
+                    <main id="main-content">
+                        {children}
+                    </main>
+
+                    <PublicFooter pages={pages} />
+                </ClientLayout>
 
                 <Script src="/js/jquery-1.11.3.min.js" strategy="afterInteractive" />
                 <Script src="/js/bootstrap.min.js" strategy="afterInteractive" />

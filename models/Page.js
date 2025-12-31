@@ -2,8 +2,8 @@ import mongoose from 'mongoose';
 
 const PageSchema = new mongoose.Schema({
     title: {
-        type: String,
-        required: true,
+        en: { type: String, required: true },
+        bg: { type: String }
     },
     slug: {
         type: String,
@@ -11,12 +11,16 @@ const PageSchema = new mongoose.Schema({
         unique: true,
     },
     content: {
-        type: String,
-        required: true,
+        en: { type: String },
+        bg: { type: String }
     },
     showInMenu: {
         type: Boolean,
         default: true,
+    },
+    isVisible: {
+        en: { type: Boolean, default: true },
+        bg: { type: Boolean, default: false }
     },
     sortOrder: {
         type: Number,
@@ -24,4 +28,8 @@ const PageSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
-export default mongoose.models.Page || mongoose.model('Page', PageSchema);
+if (mongoose.models.Page) {
+    delete mongoose.models.Page;
+}
+
+export default mongoose.model('Page', PageSchema);

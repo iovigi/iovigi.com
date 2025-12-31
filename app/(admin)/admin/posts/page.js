@@ -44,7 +44,14 @@ export default async function PostList() {
                                     <tbody>
                                         {posts.map((post) => (
                                             <tr key={post._id}>
-                                                <td>{post.title}</td>
+                                                <td>
+                                                    {post.title?.en || "No Title"}
+                                                    <br />
+                                                    <small className="text-muted">
+                                                        {post.isVisible?.en ? <span className="badge badge-success mr-1">EN</span> : <span className="badge badge-secondary mr-1">EN</span>}
+                                                        {post.isVisible?.bg ? <span className="badge badge-success">BG</span> : <span className="badge badge-secondary">BG</span>}
+                                                    </small>
+                                                </td>
                                                 <td>{post.slug}</td>
                                                 <td>{post.author}</td>
                                                 <td>{new Date(post.createdAt).toLocaleDateString()}</td>
