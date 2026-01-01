@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 
 async function getPage(slug) {
     await dbConnect();
-    const page = await Page.findOne({ slug });
+    const page = await Page.findOne({ slug }).populate('widgets');
     if (!page) return null;
     return JSON.parse(JSON.stringify(page));
 }

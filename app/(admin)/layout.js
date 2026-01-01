@@ -61,6 +61,12 @@ export default function AdminLayout({ children }) {
                                         </a>
                                     </li>
                                     <li className="nav-item">
+                                        <a href="/admin/widgets" className="nav-link">
+                                            <i className="nav-icon fas fa-th"></i>
+                                            <p>Widgets</p>
+                                        </a>
+                                    </li>
+                                    <li className="nav-item">
                                         <a href="/admin/comments" className="nav-link">
                                             <i className="nav-icon fas fa-comments"></i>
                                             <p>Comments</p>

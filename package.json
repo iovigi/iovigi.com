@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "seed": "node --env-file=.env.local scripts/seed-admin.js"
+    "seed": "node --env-file=.env.local scripts/seed-admin.js && node --env-file=.env.local scripts/seed-widgets.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

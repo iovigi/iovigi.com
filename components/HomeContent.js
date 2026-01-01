@@ -4,7 +4,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { dictionary } from '@/lib/dictionary';
 import Link from 'next/link';
 
-export default function HomeContent({ posts }) {
+export default function HomeContent({ posts, aboutMePage }) {
     const { locale } = useLanguage();
     const t = dictionary[locale] || dictionary.en;
 
@@ -14,6 +14,26 @@ export default function HomeContent({ posts }) {
         const visible = post.isVisible?.[locale] ?? (locale === 'en'); // default en=true, bg=false if undefined
         return visible;
     });
+
+    const aboutTitle = aboutMePage?.title?.[locale] || (locale === 'bg' ? 'За Мен' : 'About Me');
+    // Sanitize or unsafe HTML? The content is from RichTextEditor usually, so we need dangerouslySetInnerHTML or existing parser if any.
+    // Looking at previous code, user was just outputting text in <p>. 
+    // The previous code: <p>{locale === 'bg' ? 'Добре дошли...' : 'Welcome...'}</p>
+    // The DB content has <p> tags from my seed script.
+    // If we use simple rendering, it might escape HTML. 
+    // Let's assume standard React behavior (escaped) unless we use dangerouslySetInnerHTML.
+    // Given it's a "RichTextEditor" in admin, we should probably use dangerouslySetInnerHTML for the content.
+
+    // However, if the seed was simple text, I'd just show it.
+    // My seed used '<p>...</p>'.
+    // `HomeContent` existing code `post.content` usages:
+    // It creates excerpt by stripping tags: `content.replace(/<[^>]*>?/gm, '')`
+    // But interestingly, the post list doesn't show full content.
+    // The About Me section in the sidebar was just a <p> with text.
+    // I will use dangerouslySetInnerHTML for the content to support the RichTextEditor future usage.
+
+    const aboutContent = aboutMePage?.content?.[locale] || (locale === 'bg' ? '<p>Добре дошли в личния блог на Илия Неделчев</p>' : '<p>Welcome to my personal blog of Iliya Nedelchev</p>');
+
 
     return (
         <>
@@ -77,11 +97,11 @@ export default function HomeContent({ posts }) {
                             <div className="sidebar">
                                 <div className="widget-box">
                                     <div className="widget-title">
-                                        <span>{locale === 'bg' ? 'За Мен' : 'About Me'}</span>
+                                        <span>{aboutTitle}</span>
                                         <div className="line"></div>
                                     </div>
                                     <div className="widget-item">
-                                        <p>{locale === 'bg' ? 'Добре дошли в личния блог на Илия Неделчев' : 'Welcome to my personal blog of Iliya Nedelchev'}</p>
+                                        <div dangerouslySetInnerHTML={{ __html: aboutContent }} />
                                     </div>
                                 </div>
                             </div>

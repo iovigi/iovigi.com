@@ -25,7 +25,11 @@ const PageSchema = new mongoose.Schema({
     sortOrder: {
         type: Number,
         default: 0,
-    }
+    },
+    widgets: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Widget'
+    }]
 }, { timestamps: true });
 
 if (mongoose.models.Page) {

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import RichTextEditor from '@/app/components/RichTextEditor';
 import LocalizationTabs from '@/components/LocalizationTabs';
 
-export default function EditPageForm({ page }) {
+export default function EditPageForm({ page, availableWidgets = [] }) {
     const router = useRouter();
     const [activeTab, setActiveTab] = useState('en');
 
@@ -34,7 +34,8 @@ export default function EditPageForm({ page }) {
         content: getLocalizedField(page.content),
         showInMenu: page.showInMenu,
         sortOrder: page.sortOrder,
-        isVisible: getLocalizedBoolean(page.isVisible, true)
+        isVisible: getLocalizedBoolean(page.isVisible, true),
+        widgets: page.widgets || []
     });
     const [error, setError] = useState('');
 
@@ -188,6 +189,35 @@ export default function EditPageForm({ page }) {
                                     value={formData.content[activeTab]}
                                     onChange={(content) => handleLocalizedContentChange(content, 'content')}
                                 />
+                            </div>
+
+                            <div className="form-group">
+                                <label>Widgets</label>
+                                {availableWidgets.length === 0 ? <p className="text-muted">No widgets available.</p> : (
+                                    availableWidgets.map(widget => (
+                                        <div className="custom-control custom-checkbox" key={widget._id}>
+                                            <input
+                                                className="custom-control-input"
+                                                type="checkbox"
+                                                id={`widget_${widget._id}`}
+                                                checked={formData.widgets.includes(widget._id)}
+                                                onChange={(e) => {
+                                                    const checked = e.target.checked;
+                                                    let newWidgets = [...formData.widgets];
+                                                    if (checked) {
+                                                        newWidgets.push(widget._id);
+                                                    } else {
+                                                        newWidgets = newWidgets.filter(id => id !== widget._id);
+                                                    }
+                                                    setFormData({ ...formData, widgets: newWidgets });
+                                                }}
+                                            />
+                                            <label htmlFor={`widget_${widget._id}`} className="custom-control-label">
+                                                {widget.key}
+                                            </label>
+                                        </div>
+                                    ))
+                                )}
                             </div>
                         </div>
                         <div className="card-footer">

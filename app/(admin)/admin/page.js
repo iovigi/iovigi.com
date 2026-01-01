@@ -16,7 +16,9 @@ export default function AdminDashboard() {
                                 <p className="card-text">
                                     Manage your posts and pages here.
                                 </p>
-                                <a href="/admin/posts" className="btn btn-primary">Manage Posts</a>
+                                <a href="/admin/posts" className="btn btn-primary mr-2">Manage Posts</a>
+                                <a href="/admin/pages" className="btn btn-secondary mr-2">Manage Pages</a>
+                                <a href="/admin/widgets" className="btn btn-info">Manage Widgets</a>
                             </div>
                         </div>
                     </div>

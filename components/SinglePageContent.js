@@ -13,7 +13,7 @@ export default function SinglePageContent({ page }) {
         <section id="content">
             <div className="container">
                 <div className="row">
-                    <div className="col-md-12">
+                    <div className={page.widgets && page.widgets.length > 0 ? "col-md-9" : "col-md-12"}>
                         <div className="primary">
                             <div className="blog-title">
                                 <h2>{title}</h2>
@@ -21,6 +21,31 @@ export default function SinglePageContent({ page }) {
                             <div className="content" dangerouslySetInnerHTML={{ __html: content }}></div>
                         </div>
                     </div>
+                    {page.widgets && page.widgets.length > 0 && (
+                        <div className="col-md-3">
+                            <div className="sidebar">
+                                {page.widgets.map(widget => {
+                                    const wTitle = widget.title?.[locale] || widget.title?.en;
+                                    const wContent = widget.content?.[locale] || widget.content?.en;
+                                    const isVisible = widget.isVisible?.[locale] ?? (locale === 'en');
+
+                                    if (!isVisible) return null;
+
+                                    return (
+                                        <div className="widget-box" key={widget._id}>
+                                            <div className="widget-title">
+                                                <span>{wTitle}</span>
+                                                <div className="line"></div>
+                                            </div>
+                                            <div className="widget-item">
+                                                <div dangerouslySetInnerHTML={{ __html: wContent }} />
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </section>
