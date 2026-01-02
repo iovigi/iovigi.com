@@ -26,7 +26,11 @@ export default function PublicFooter({ pages }) {
                     </ul>
                 </div>
                 <div className="copyright">
-                    {/* Copyright removed as per user request */}
+                    <p>
+                        <a href="https://github.com/iovigi/iovigi.com" target="_blank" rel="noopener noreferrer" style={{ color: '#fff' }}>
+                            {t.sourceCode}
+                        </a>
+                    </p>
                 </div>
             </div>
         </footer>
