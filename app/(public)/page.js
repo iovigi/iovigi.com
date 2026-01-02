@@ -3,6 +3,8 @@ import Post from '@/models/Post';
 import Widget from '@/models/Widget';
 import HomeContent from '@/components/HomeContent';
 
+export const dynamic = 'force-dynamic';
+
 async function getData() {
     try {
         await dbConnect();
