@@ -72,7 +72,7 @@ export default function HomeContent({ posts, aboutMePage }) {
                                                     </div>
                                                     <div className="meta">
                                                         <ul>
-                                                            <li className="date">{new Date(post.createdAt).toLocaleDateString()}</li>
+                                                            <li className="date">{new Date(post.createdAt).toLocaleDateString(locale)}</li>
                                                         </ul>
                                                     </div>
                                                     <div className="content">
