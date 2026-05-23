@@ -1,11 +1,17 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import 'quill/dist/quill.snow.css';
+import { useLanguage } from '@/context/LanguageContext';
+import { dictionary } from '@/lib/dictionary';
 
 export default function RichTextEditor({ value, onChange }) {
     const editorRef = useRef(null);
     const quillRef = useRef(null);
+    const [showHtml, setShowHtml] = useState(false);
+
+    const { locale } = useLanguage() || { locale: 'en' };
+    const t = dictionary[locale] || dictionary.en;
 
     useEffect(() => {
         let isMounted = true;
@@ -56,30 +62,77 @@ export default function RichTextEditor({ value, onChange }) {
 
         return () => {
             isMounted = false;
-            // Optionally destroy quill instance if API supports it, but referencing null is enough
         };
     }, []);
 
-    // Update content if value changes externally (optional, but good for edit mode)
+    // Update content if value changes externally (and NOT in HTML mode)
     useEffect(() => {
-        if (quillRef.current) {
+        if (quillRef.current && !showHtml) {
             const currentContent = quillRef.current.root.innerHTML;
-            // Basic comparison to prevent cursor jumps on typing
-            // Using simple equality check. 
-            // Note: external updates while typing can still be tricky without Delta management,
-            // but for this simple CMS it's usually fine as local state drives the editor.
-            // We mainly need this for initial load in Edit mode.
             if (value !== currentContent && value !== undefined) {
-                // If the value is effectively empty, and editor has empty paragraph, ignore
                 if (!value && currentContent === '<p><br></p>') return;
                 quillRef.current.root.innerHTML = value;
             }
         }
-    }, [value]);
+    }, [value, showHtml]);
+
+    // Handle visibility of Quill toolbar and container when mode changes
+    useEffect(() => {
+        if (editorRef.current) {
+            const parent = editorRef.current.parentElement;
+            if (parent) {
+                const toolbar = parent.querySelector('.ql-toolbar');
+                if (toolbar) {
+                    toolbar.style.display = showHtml ? 'none' : 'block';
+                }
+            }
+            editorRef.current.style.display = showHtml ? 'none' : 'block';
+        }
+    }, [showHtml]);
 
     return (
-        <div style={{ height: '350px', marginBottom: '50px' }}>
+        <div style={{ minHeight: '380px', marginBottom: '50px' }}>
+            <div className="d-flex justify-content-between align-items-center mb-2">
+                <span className="text-muted small">
+                    {showHtml ? t.editingHtmlMode : t.editingVisualMode}
+                </span>
+                <button
+                    type="button"
+                    className={`btn btn-sm ${showHtml ? 'btn-primary' : 'btn-outline-primary'}`}
+                    onClick={() => {
+                        if (showHtml) {
+                            if (quillRef.current) {
+                                quillRef.current.root.innerHTML = value || '';
+                            }
+                        }
+                        setShowHtml(!showHtml);
+                    }}
+                >
+                    <i className={`fas ${showHtml ? 'fa-eye' : 'fa-code'} mr-1`}></i>
+                    {showHtml ? t.visualEditor : t.editHtml}
+                </button>
+            </div>
+
             <div ref={editorRef} style={{ height: '300px' }} />
+
+            {showHtml && (
+                <textarea
+                    className="form-control"
+                    value={value || ''}
+                    onChange={(e) => onChange(e.target.value)}
+                    style={{
+                        height: '300px',
+                        fontFamily: 'monospace',
+                        fontSize: '14px',
+                        backgroundColor: '#272b30',
+                        color: '#f8f9fa',
+                        border: '1px solid #ced4da',
+                        borderRadius: '4px',
+                        padding: '10px',
+                        resize: 'vertical'
+                    }}
+                />
+            )}
         </div>
     );
 }
