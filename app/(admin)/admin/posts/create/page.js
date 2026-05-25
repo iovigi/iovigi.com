@@ -21,31 +21,35 @@ export default function CreatePost() {
 
     // Handle nested localized changes
     const handleLocalizedChange = (e, field) => {
-        setFormData({
-            ...formData,
-            [field]: { ...formData[field], [activeTab]: e.target.value }
-        });
+        const { value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [field]: { ...prev[field], [activeTab]: value }
+        }));
     };
 
     // Handle RichText nested localized changes
     const handleLocalizedContentChange = (content, field) => {
-        setFormData({
-            ...formData,
-            [field]: { ...formData[field], [activeTab]: content }
-        });
+        setFormData(prev => ({
+            ...prev,
+            [field]: { ...prev[field], [activeTab]: content }
+        }));
     };
 
     // Handle Checkbox nested localized changes
     const handleLocalizedCheckboxChange = (e, field) => {
-        setFormData({
-            ...formData,
-            [field]: { ...formData[field], [activeTab]: e.target.checked }
-        });
+        const { checked } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [field]: { ...prev[field], [activeTab]: checked }
+        }));
     };
 
     // Handle top-level changes (slug, image)
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value, type, checked } = e.target;
+        const val = type === 'checkbox' ? checked : value;
+        setFormData(prev => ({ ...prev, [name]: val }));
     };
 
     const handleSubmit = async (e) => {
@@ -96,7 +100,7 @@ export default function CreatePost() {
                                     </div>
 
                                     <div className="form-group">
-                                        <ImageUploader value={formData.image} onChange={(url) => setFormData({ ...formData, image: url })} />
+                                         <ImageUploader value={formData.image} onChange={(url) => setFormData(prev => ({ ...prev, image: url }))} />
                                     </div>
 
                                     <hr />

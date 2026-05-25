@@ -8,10 +8,17 @@ import { dictionary } from '@/lib/dictionary';
 export default function RichTextEditor({ value, onChange }) {
     const editorRef = useRef(null);
     const quillRef = useRef(null);
+    const onChangeRef = useRef(onChange);
     const [showHtml, setShowHtml] = useState(false);
+    const showHtmlRef = useRef(showHtml);
 
     const { locale } = useLanguage() || { locale: 'en' };
     const t = dictionary[locale] || dictionary.en;
+
+    useEffect(() => {
+        onChangeRef.current = onChange;
+        showHtmlRef.current = showHtml;
+    }, [onChange, showHtml]);
 
     useEffect(() => {
         let isMounted = true;
@@ -50,10 +57,14 @@ export default function RichTextEditor({ value, onChange }) {
                     quillInstance.root.innerHTML = value;
                 }
 
-                quillInstance.on('text-change', () => {
+                quillInstance.on('text-change', (delta, oldDelta, source) => {
                     if (!isMounted) return;
+                    if (showHtmlRef.current) return;
+                    if (source !== 'user') return;
                     const html = quillInstance.root.innerHTML;
-                    onChange(html === '<p><br></p>' ? '' : html);
+                    if (onChangeRef.current) {
+                        onChangeRef.current(html === '<p><br></p>' ? '' : html);
+                    }
                 });
             }
         };
@@ -62,6 +73,9 @@ export default function RichTextEditor({ value, onChange }) {
 
         return () => {
             isMounted = false;
+            if (quillRef.current) {
+                quillRef.current.off('text-change');
+            }
         };
     }, []);
 
@@ -100,11 +114,6 @@ export default function RichTextEditor({ value, onChange }) {
                     type="button"
                     className={`btn btn-sm ${showHtml ? 'btn-primary' : 'btn-outline-primary'}`}
                     onClick={() => {
-                        if (showHtml) {
-                            if (quillRef.current) {
-                                quillRef.current.root.innerHTML = value || '';
-                            }
-                        }
                         setShowHtml(!showHtml);
                     }}
                 >

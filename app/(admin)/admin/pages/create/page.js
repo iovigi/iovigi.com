@@ -20,32 +20,35 @@ export default function CreatePage() {
 
     // Handle localized text changes
     const handleLocalizedChange = (e, field) => {
-        setFormData({
-            ...formData,
-            [field]: { ...formData[field], [activeTab]: e.target.value }
-        });
+        const { value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [field]: { ...prev[field], [activeTab]: value }
+        }));
     };
 
     // Handle localized content (RichText)
     const handleLocalizedContentChange = (content, field) => {
-        setFormData({
-            ...formData,
-            [field]: { ...formData[field], [activeTab]: content }
-        });
+        setFormData(prev => ({
+            ...prev,
+            [field]: { ...prev[field], [activeTab]: content }
+        }));
     };
 
     // Handle localized boolean (checkbox)
     const handleLocalizedCheckboxChange = (e, field) => {
-        setFormData({
-            ...formData,
-            [field]: { ...formData[field], [activeTab]: e.target.checked }
-        });
+        const { checked } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [field]: { ...prev[field], [activeTab]: checked }
+        }));
     };
 
     // Handle global changes
     const handleChange = (e) => {
-        const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
-        setFormData({ ...formData, [e.target.name]: value });
+        const { name, value, type, checked } = e.target;
+        const val = type === 'checkbox' ? checked : value;
+        setFormData(prev => ({ ...prev, [name]: val }));
     };
 
     const handleSubmit = async (e) => {

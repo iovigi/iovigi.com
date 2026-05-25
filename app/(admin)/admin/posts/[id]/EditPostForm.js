@@ -43,30 +43,34 @@ export default function EditPostForm({ post }) {
 
     // Handle localized text changes
     const handleLocalizedChange = (e, field) => {
-        setFormData({
-            ...formData,
-            [field]: { ...formData[field], [activeTab]: e.target.value }
-        });
+        const { value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [field]: { ...prev[field], [activeTab]: value }
+        }));
     };
 
     // Handle localized content (RichText)
     const handleLocalizedContentChange = (content, field) => {
-        setFormData({
-            ...formData,
-            [field]: { ...formData[field], [activeTab]: content }
-        });
+        setFormData(prev => ({
+            ...prev,
+            [field]: { ...prev[field], [activeTab]: content }
+        }));
     };
 
     // Handle localized boolean (checkbox)
     const handleLocalizedCheckboxChange = (e, field) => {
-        setFormData({
-            ...formData,
-            [field]: { ...formData[field], [activeTab]: e.target.checked }
-        });
+        const { checked } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [field]: { ...prev[field], [activeTab]: checked }
+        }));
     };
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value, type, checked } = e.target;
+        const val = type === 'checkbox' ? checked : value;
+        setFormData(prev => ({ ...prev, [name]: val }));
     };
 
     const handleSubmit = async (e) => {
@@ -142,7 +146,7 @@ export default function EditPostForm({ post }) {
                             </div>
 
                             <div className="form-group">
-                                <ImageUploader value={formData.image} onChange={(url) => setFormData({ ...formData, image: url })} />
+                                <ImageUploader value={formData.image} onChange={(url) => setFormData(prev => ({ ...prev, image: url }))} />
                             </div>
 
                             <hr />

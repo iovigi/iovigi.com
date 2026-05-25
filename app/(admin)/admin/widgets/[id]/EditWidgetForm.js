@@ -36,24 +36,26 @@ export default function EditWidgetForm({ widget }) {
     const [error, setError] = useState('');
 
     const handleLocalizedChange = (e, field) => {
-        setFormData({
-            ...formData,
-            [field]: { ...formData[field], [activeTab]: e.target.value }
-        });
+        const { value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [field]: { ...prev[field], [activeTab]: value }
+        }));
     };
 
     const handleLocalizedContentChange = (content, field) => {
-        setFormData({
-            ...formData,
-            [field]: { ...formData[field], [activeTab]: content }
-        });
+        setFormData(prev => ({
+            ...prev,
+            [field]: { ...prev[field], [activeTab]: content }
+        }));
     };
 
     const handleLocalizedCheckboxChange = (e, field) => {
-        setFormData({
-            ...formData,
-            [field]: { ...formData[field], [activeTab]: e.target.checked }
-        });
+        const { checked } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [field]: { ...prev[field], [activeTab]: checked }
+        }));
     };
 
     const handleSubmit = async (e) => {

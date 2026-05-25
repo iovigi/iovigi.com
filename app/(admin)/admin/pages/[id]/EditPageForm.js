@@ -43,32 +43,35 @@ export default function EditPageForm({ page, availableWidgets = [] }) {
 
     // Handle localized text changes
     const handleLocalizedChange = (e, field) => {
-        setFormData({
-            ...formData,
-            [field]: { ...formData[field], [activeTab]: e.target.value }
-        });
+        const { value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [field]: { ...prev[field], [activeTab]: value }
+        }));
     };
 
     // Handle localized content (RichText)
     const handleLocalizedContentChange = (content, field) => {
-        setFormData({
-            ...formData,
-            [field]: { ...formData[field], [activeTab]: content }
-        });
+        setFormData(prev => ({
+            ...prev,
+            [field]: { ...prev[field], [activeTab]: content }
+        }));
     };
 
     // Handle localized boolean (checkbox)
     const handleLocalizedCheckboxChange = (e, field) => {
-        setFormData({
-            ...formData,
-            [field]: { ...formData[field], [activeTab]: e.target.checked }
-        });
+        const { checked } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [field]: { ...prev[field], [activeTab]: checked }
+        }));
     };
 
     // Handle global changes
     const handleChange = (e) => {
-        const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
-        setFormData({ ...formData, [e.target.name]: value });
+        const { name, value, type, checked } = e.target;
+        const val = type === 'checkbox' ? checked : value;
+        setFormData(prev => ({ ...prev, [name]: val }));
     };
 
     const handleSubmit = async (e) => {
@@ -203,13 +206,15 @@ export default function EditPageForm({ page, availableWidgets = [] }) {
                                                 checked={formData.widgets.includes(widget._id)}
                                                 onChange={(e) => {
                                                     const checked = e.target.checked;
-                                                    let newWidgets = [...formData.widgets];
-                                                    if (checked) {
-                                                        newWidgets.push(widget._id);
-                                                    } else {
-                                                        newWidgets = newWidgets.filter(id => id !== widget._id);
-                                                    }
-                                                    setFormData({ ...formData, widgets: newWidgets });
+                                                    setFormData(prev => {
+                                                        let newWidgets = [...prev.widgets];
+                                                        if (checked) {
+                                                            newWidgets.push(widget._id);
+                                                        } else {
+                                                            newWidgets = newWidgets.filter(id => id !== widget._id);
+                                                        }
+                                                        return { ...prev, widgets: newWidgets };
+                                                    });
                                                 }}
                                             />
                                             <label htmlFor={`widget_${widget._id}`} className="custom-control-label">

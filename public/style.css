@@ -70,7 +70,6 @@ a:focus {
 }
 
 p {
-	text-transform: capitalize;
 	font-family: 'Droid Sans', sans-serif;
 	font-size: 13px;
 	line-height: 30px;
