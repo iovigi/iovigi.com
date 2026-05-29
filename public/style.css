@@ -234,7 +234,7 @@ textarea {
 }
 
 .fixed-nav .navbar-brand,
-.fixed-nav .nav li a {
+.fixed-nav .nav > li > a {
 	color: #ffffff !important;
 }
 
