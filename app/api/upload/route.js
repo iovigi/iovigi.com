@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { writeFile } from 'fs/promises';
+import { writeFile, mkdir } from 'fs/promises';
+import { existsSync } from 'fs';
 import { join } from 'path';
 
 export async function POST(request) {
@@ -18,13 +19,10 @@ export async function POST(request) {
         // Note: In production you might want to use S3 or similar, but local fs works for this request
         const relativePath = '/uploads/' + filename;
         const uploadDir = join(process.cwd(), 'public', 'uploads');
-        // Ensure directory exists (basic check, though 'write_to_file' tool handles this if I used it, but here it is runtime code)
-        // We'll rely on the directory being created or existing. 'public/uploads' is standard.
-        // Actually, to be safe, I should ensure the directory exists in the code or manually create it. 
-        // I will add a check in the code:
-        const fs = require('fs');
-        if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true });
+        
+        // Ensure directory exists
+        if (!existsSync(uploadDir)) {
+            await mkdir(uploadDir, { recursive: true });
         }
 
         const path = join(uploadDir, filename);
