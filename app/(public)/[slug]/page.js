@@ -1,6 +1,7 @@
 import dbConnect from '@/lib/db';
 import Page from '@/models/Page';
 import { notFound } from 'next/navigation';
+import { cookies } from 'next/headers';
 
 async function getPage(slug) {
     await dbConnect();
@@ -17,7 +18,9 @@ export async function generateMetadata({ params }) {
             title: 'Page Not Found',
         }
     }
-    const title = page.title?.en || (typeof page.title === 'string' ? page.title : 'Untitled');
+    const cookieStore = await cookies();
+    const locale = cookieStore.get('NEXT_LOCALE')?.value || 'en';
+    const title = page.title?.[locale] || page.title?.en || (typeof page.title === 'string' ? page.title : 'Untitled');
     return {
         title: title,
     }

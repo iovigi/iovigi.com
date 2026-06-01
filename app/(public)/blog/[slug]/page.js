@@ -2,6 +2,7 @@ import dbConnect from '@/lib/db';
 import Post from '@/models/Post';
 import Comment from '@/models/Comment';
 import { notFound } from 'next/navigation';
+import { cookies } from 'next/headers';
 import CommentForm from '@/app/components/public/CommentForm';
 
 async function getPost(slug) {
@@ -25,7 +26,9 @@ export async function generateMetadata({ params }) {
             title: 'Post Not Found',
         }
     }
-    const title = post.title?.en || (typeof post.title === 'string' ? post.title : 'Untitled');
+    const cookieStore = await cookies();
+    const locale = cookieStore.get('NEXT_LOCALE')?.value || 'en';
+    const title = post.title?.[locale] || post.title?.en || (typeof post.title === 'string' ? post.title : 'Untitled');
     return {
         title: title,
     }
