@@ -54,7 +54,8 @@ export default function RichTextEditor({ value, onChange }) {
 
                 // Set initial value
                 if (value) {
-                    quillInstance.root.innerHTML = value;
+                    const delta = quillInstance.clipboard.convert({ html: value });
+                    quillInstance.setContents(delta, 'silent');
                 }
 
                 quillInstance.on('text-change', (delta, oldDelta, source) => {
@@ -85,7 +86,8 @@ export default function RichTextEditor({ value, onChange }) {
             const currentContent = quillRef.current.root.innerHTML;
             if (value !== currentContent && value !== undefined) {
                 if (!value && currentContent === '<p><br></p>') return;
-                quillRef.current.root.innerHTML = value;
+                const delta = quillRef.current.clipboard.convert({ html: value || '' });
+                quillRef.current.setContents(delta, 'silent');
             }
         }
     }, [value, showHtml]);
