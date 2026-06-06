@@ -72,6 +72,12 @@ export default function AdminLayout({ children }) {
                                             <p>Comments</p>
                                         </a>
                                     </li>
+                                    <li className="nav-item">
+                                        <a href="/admin/settings" className="nav-link">
+                                            <i className="nav-icon fas fa-cog"></i>
+                                            <p>Settings</p>
+                                        </a>
+                                    </li>
                                 </ul>
                             </nav>
                         </div>

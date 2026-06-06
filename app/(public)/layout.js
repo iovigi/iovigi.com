@@ -1,6 +1,7 @@
 import Script from 'next/script';
 import dbConnect from '@/lib/db';
 import Page from '@/models/Page';
+import Setting from '@/models/Setting';
 import SmartMenusLoader from '@/app/components/SmartMenusLoader';
 import '../globals.css';
 import ClientLayout from '../ClientLayout';
@@ -29,8 +30,20 @@ async function getMenuPages() {
     }
 }
 
+async function getGoogleAnalyticsSetting() {
+    try {
+        await dbConnect();
+        const gaSetting = await Setting.findOne({ key: 'google_analytics' });
+        return gaSetting ? gaSetting.value : '';
+    } catch (error) {
+        console.error('Error fetching GA setting:', error);
+        return '';
+    }
+}
+
 export default async function RootLayout({ children }) {
     const pages = await getMenuPages();
+    const gaCode = await getGoogleAnalyticsSetting();
 
     return (
         <html lang="en" suppressHydrationWarning>
@@ -45,6 +58,9 @@ export default async function RootLayout({ children }) {
                 <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;700&display=swap" rel="stylesheet" />
             </head>
             <body suppressHydrationWarning={true}>
+                {gaCode && (
+                    <div dangerouslySetInnerHTML={{ __html: gaCode }} style={{ display: 'none' }} />
+                )}
                 <ClientLayout>
                     <div id="space-background" style={{
                         position: 'fixed',
