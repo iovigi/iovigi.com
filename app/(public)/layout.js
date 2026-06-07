@@ -7,6 +7,7 @@ import '../globals.css';
 import ClientLayout from '../ClientLayout';
 import PublicNavbar from '@/components/PublicNavbar';
 import PublicFooter from '@/components/PublicFooter';
+import Tracker from '@/components/Tracker';
 
 export const metadata = {
     title: {
@@ -62,6 +63,7 @@ export default async function RootLayout({ children }) {
                     <div dangerouslySetInnerHTML={{ __html: gaCode }} style={{ display: 'none' }} />
                 )}
                 <ClientLayout>
+                    <Tracker />
                     <div id="space-background" style={{
                         position: 'fixed',
                         top: 0,

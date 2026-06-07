@@ -34,8 +34,8 @@ export async function proxy(request) {
         if (pathname === '/api/auth/login') {
             return NextResponse.next();
         }
-        // Allow public comment submissions
-        if (pathname === '/api/comments' && method === 'POST') {
+        // Allow public comment submissions and tracking
+        if ((pathname === '/api/comments' || pathname === '/api/track') && method === 'POST') {
             return NextResponse.next();
         }
         // Allow public read actions
