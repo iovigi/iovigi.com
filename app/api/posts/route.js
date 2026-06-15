@@ -6,17 +6,24 @@ export async function GET(request) {
     await dbConnect();
     const { searchParams } = new URL(request.url);
     const slug = searchParams.get('slug');
+    const isPublic = searchParams.get('public') === 'true';
+
+    // Filter applied when fetching posts for the public front-end:
+    // only include posts whose scheduledAt is null or has already passed.
+    const schedulingFilter = isPublic
+        ? { $or: [{ scheduledAt: null }, { scheduledAt: { $lte: new Date() } }] }
+        : {};
 
     try {
         if (slug) {
-            const post = await Post.findOne({ slug });
+            const post = await Post.findOne({ slug, ...schedulingFilter });
             if (!post) {
                 return NextResponse.json({ success: false, error: 'Post not found' }, { status: 404 });
             }
             return NextResponse.json({ success: true, data: post });
         }
 
-        const posts = await Post.find({}).sort({ createdAt: -1 });
+        const posts = await Post.find(schedulingFilter).sort({ createdAt: -1 });
         return NextResponse.json({ success: true, data: posts });
     } catch (error) {
         return NextResponse.json({ success: false, error: error.message }, { status: 400 });

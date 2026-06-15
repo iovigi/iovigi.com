@@ -29,6 +29,12 @@ const PostSchema = new mongoose.Schema({
         type: String,
         default: 'Admin',
     },
+    // Optional scheduled publish date. When set, the post is only publicly
+    // visible after this datetime. When null, visibility is governed by isVisible.
+    scheduledAt: {
+        type: Date,
+        default: null,
+    },
 }, { timestamps: true });
 
 if (mongoose.models.Post) {

@@ -7,7 +7,12 @@ import CommentForm from '@/app/components/public/CommentForm';
 
 async function getPost(slug) {
     await dbConnect();
-    const post = await Post.findOne({ slug });
+    // Only return the post if it's not scheduled for the future.
+    const now = new Date();
+    const post = await Post.findOne({
+        slug,
+        $or: [{ scheduledAt: null }, { scheduledAt: { $lte: now } }]
+    });
     if (!post) return null;
     return JSON.parse(JSON.stringify(post));
 }

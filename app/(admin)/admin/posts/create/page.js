@@ -15,7 +15,10 @@ export default function CreatePost() {
         content: { en: '', bg: '' },
         excerpt: { en: '', bg: '' },
         image: '',
-        isVisible: { en: true, bg: false }
+        isVisible: { en: true, bg: false },
+        // null means "publish immediately" based on isVisible;
+        // a datetime string means the post will only go live at/after that time.
+        scheduledAt: ''
     });
     const [error, setError] = useState('');
 
@@ -101,6 +104,39 @@ export default function CreatePost() {
 
                                     <div className="form-group">
                                          <ImageUploader value={formData.image} onChange={(url) => setFormData(prev => ({ ...prev, image: url }))} />
+                                    </div>
+
+                                    {/* ── Scheduled Publishing ── */}
+                                    <div className="form-group">
+                                        <label htmlFor="scheduledAt">
+                                            <i className="fas fa-clock mr-1"></i> Schedule Publication
+                                        </label>
+                                        <input
+                                            type="datetime-local"
+                                            id="scheduledAt"
+                                            className="form-control"
+                                            name="scheduledAt"
+                                            value={formData.scheduledAt}
+                                            onChange={handleChange}
+                                        />
+                                        <small className="form-text text-muted">
+                                            Leave empty to publish immediately (based on visibility). Set a future date/time to schedule.
+                                        </small>
+                                        {formData.scheduledAt && (
+                                            <div className="mt-1">
+                                                <span className="badge badge-warning" style={{ fontSize: '0.85rem' }}>
+                                                    <i className="fas fa-hourglass-half mr-1"></i>
+                                                    Scheduled: {new Date(formData.scheduledAt).toLocaleString()}
+                                                </span>
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-sm btn-link text-danger ml-2 p-0"
+                                                    onClick={() => setFormData(prev => ({ ...prev, scheduledAt: '' }))}
+                                                >
+                                                    Clear schedule
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
 
                                     <hr />

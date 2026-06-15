@@ -35,7 +35,11 @@ export default function EditPostForm({ post }) {
         content: getLocalizedField(post.content),
         excerpt: getLocalizedField(post.excerpt),
         image: post.image || '',
-        isVisible: getLocalizedBoolean(post.isVisible, true)
+        isVisible: getLocalizedBoolean(post.isVisible, true),
+        // Convert DB ISO date to the 'YYYY-MM-DDTHH:mm' format required by datetime-local input.
+        scheduledAt: post.scheduledAt
+            ? new Date(post.scheduledAt).toISOString().slice(0, 16)
+            : ''
     });
     const [error, setError] = useState('');
 
@@ -147,6 +151,76 @@ export default function EditPostForm({ post }) {
 
                             <div className="form-group">
                                 <ImageUploader value={formData.image} onChange={(url) => setFormData(prev => ({ ...prev, image: url }))} />
+                            </div>
+
+                            {/* ── Scheduled Publishing ── */}
+                            <div className="form-group">
+                                <label htmlFor="scheduledAt">
+                                    <i className="fas fa-clock mr-1"></i> Schedule Publication
+                                </label>
+                                {/* Status badge */}
+                                {(() => {
+                                    const now = new Date();
+                                    const scheduled = formData.scheduledAt ? new Date(formData.scheduledAt) : null;
+                                    const isVisibleAny = formData.isVisible?.en || formData.isVisible?.bg;
+                                    if (scheduled && scheduled > now) {
+                                        return (
+                                            <div className="mb-2">
+                                                <span className="badge badge-warning" style={{ fontSize: '0.85rem' }}>
+                                                    <i className="fas fa-hourglass-half mr-1"></i>
+                                                    Scheduled &mdash; goes live: {scheduled.toLocaleString()}
+                                                </span>
+                                            </div>
+                                        );
+                                    } else if (scheduled && scheduled <= now) {
+                                        return (
+                                            <div className="mb-2">
+                                                <span className="badge badge-success" style={{ fontSize: '0.85rem' }}>
+                                                    <i className="fas fa-check-circle mr-1"></i>
+                                                    Published (schedule passed)
+                                                </span>
+                                            </div>
+                                        );
+                                    } else if (isVisibleAny) {
+                                        return (
+                                            <div className="mb-2">
+                                                <span className="badge badge-success" style={{ fontSize: '0.85rem' }}>
+                                                    <i className="fas fa-eye mr-1"></i>
+                                                    Published
+                                                </span>
+                                            </div>
+                                        );
+                                    } else {
+                                        return (
+                                            <div className="mb-2">
+                                                <span className="badge badge-secondary" style={{ fontSize: '0.85rem' }}>
+                                                    <i className="fas fa-eye-slash mr-1"></i>
+                                                    Draft
+                                                </span>
+                                            </div>
+                                        );
+                                    }
+                                })()}
+                                <input
+                                    type="datetime-local"
+                                    id="scheduledAt"
+                                    className="form-control"
+                                    name="scheduledAt"
+                                    value={formData.scheduledAt}
+                                    onChange={handleChange}
+                                />
+                                <small className="form-text text-muted">
+                                    Leave empty to publish based on visibility. Set a future date/time to schedule.
+                                </small>
+                                {formData.scheduledAt && (
+                                    <button
+                                        type="button"
+                                        className="btn btn-sm btn-link text-danger p-0 mt-1"
+                                        onClick={() => setFormData(prev => ({ ...prev, scheduledAt: '' }))}
+                                    >
+                                        <i className="fas fa-times mr-1"></i>Clear schedule
+                                    </button>
+                                )}
                             </div>
 
                             <hr />

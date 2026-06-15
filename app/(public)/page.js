@@ -8,7 +8,12 @@ export const dynamic = 'force-dynamic';
 async function getData() {
     try {
         await dbConnect();
-        const posts = await Post.find({}).sort({ createdAt: -1 });
+        // Only fetch posts that are ready to be published:
+        // scheduledAt is null (no schedule set) or scheduledAt has already passed.
+        const now = new Date();
+        const posts = await Post.find({
+            $or: [{ scheduledAt: null }, { scheduledAt: { $lte: now } }]
+        }).sort({ createdAt: -1 });
         const aboutMeWidget = await Widget.findOne({ key: 'about-me' });
 
         return {
