@@ -221,9 +221,15 @@ textarea,
   justify-content: center;
 }
 
+@media (min-width: 768px) {
+  .search-nav-item {
+    height: 80px;
+  }
+}
+
 .search-form-inline {
   margin: 0;
-  padding: 8px 15px !important;
+  padding: 0 15px !important;
 }
 
 .search-input-wrapper {
@@ -241,6 +247,12 @@ textarea,
   font-size: 13px;
   width: 140px !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  text-transform: none !important;
+}
+
+.header-search-input::placeholder {
+  text-transform: none !important;
+  color: rgba(255, 255, 255, 0.5) !important;
 }
 
 .header-search-input:focus {
