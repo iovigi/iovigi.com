@@ -7,6 +7,7 @@ export default function SettingsForm({ initialSettings }) {
     const router = useRouter();
     const [formData, setFormData] = useState({
         google_analytics: initialSettings.google_analytics || '',
+        show_search: initialSettings.show_search || 'false',
     });
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState('');
@@ -79,6 +80,25 @@ export default function SettingsForm({ initialSettings }) {
                                     <strong>EN:</strong> Paste the full Google Analytics tag tracking snippet (including the <code>&lt;script&gt;</code> tags). It will be injected automatically into the public site layout. Leave blank to disable.
                                     <br />
                                     <strong>BG:</strong> Поставете пълния проследяващ код от Google Analytics (заедно със <code>&lt;script&gt;</code> таговете). Той ще бъде добавен автоматично в публичния изглед на сайта. Оставете празно за деактивиране.
+                                </small>
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="show_search">Show Search Bar in Header / Търсачка в менюто</label>
+                                <select
+                                    name="show_search"
+                                    id="show_search"
+                                    className="form-control"
+                                    value={formData.show_search}
+                                    onChange={handleChange}
+                                >
+                                    <option value="true">Yes / Да</option>
+                                    <option value="false">No / Не</option>
+                                </select>
+                                <small className="form-text text-muted mt-2">
+                                    <strong>EN:</strong> Show or hide the search bar in the public header navigation menu.
+                                    <br />
+                                    <strong>BG:</strong> Покажи или скрий търсачката в горното навигационно меню на сайта.
                                 </small>
                             </div>
                         </div>

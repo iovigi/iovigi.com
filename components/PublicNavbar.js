@@ -4,7 +4,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { dictionary } from '@/lib/dictionary';
 import { LanguageSwitcher } from './LanguageSwitcher';
 
-export default function PublicNavbar({ pages }) {
+export default function PublicNavbar({ pages, showSearch }) {
     const { locale } = useLanguage();
     const t = dictionary[locale] || dictionary.en;
 
@@ -34,6 +34,24 @@ export default function PublicNavbar({ pages }) {
                                     <li key={page._id}><a href={`/${page.slug}`}>{title}</a></li>
                                 );
                             })}
+                            {showSearch && (
+                                <li className="search-nav-item">
+                                    <form action="/search" method="GET" className="navbar-form search-form-inline">
+                                        <div className="search-input-wrapper">
+                                            <input 
+                                                type="text" 
+                                                name="q" 
+                                                className="header-search-input" 
+                                                placeholder={t.searchPlaceholder} 
+                                                required
+                                            />
+                                            <button type="submit" className="search-submit-btn">
+                                                <i className="fa fa-search"></i>
+                                            </button>
+                                        </div>
+                                    </form>
+                                </li>
+                            )}
                             <LanguageSwitcher />
                         </ul>
                     </div>

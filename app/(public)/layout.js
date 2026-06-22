@@ -31,20 +31,21 @@ async function getMenuPages() {
     }
 }
 
-async function getGoogleAnalyticsSetting() {
+async function getSetting(key, defaultValue = '') {
     try {
         await dbConnect();
-        const gaSetting = await Setting.findOne({ key: 'google_analytics' });
-        return gaSetting ? gaSetting.value : '';
+        const setting = await Setting.findOne({ key });
+        return setting ? setting.value : defaultValue;
     } catch (error) {
-        console.error('Error fetching GA setting:', error);
-        return '';
+        console.error(`Error fetching setting ${key}:`, error);
+        return defaultValue;
     }
 }
 
 export default async function RootLayout({ children }) {
     const pages = await getMenuPages();
-    const gaCode = await getGoogleAnalyticsSetting();
+    const gaCode = await getSetting('google_analytics', '');
+    const showSearch = (await getSetting('show_search', 'false')) === 'true';
 
     return (
         <html lang="en" suppressHydrationWarning>
@@ -60,7 +61,7 @@ export default async function RootLayout({ children }) {
             </head>
             <body suppressHydrationWarning={true}>
                 {gaCode && (
-                    <div dangerouslySetInnerHTML={{ __html: gaCode }} style={{ display: 'none' }} />
+                     <div dangerouslySetInnerHTML={{ __html: gaCode }} style={{ display: 'none' }} />
                 )}
                 <ClientLayout>
                     <Tracker />
@@ -83,7 +84,7 @@ export default async function RootLayout({ children }) {
                         <div id="status">&nbsp;</div>
                     </div>
 
-                    <PublicNavbar pages={pages} />
+                    <PublicNavbar pages={pages} showSearch={showSearch} />
 
                     <main id="main-content">
                         {children}
