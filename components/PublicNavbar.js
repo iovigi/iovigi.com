@@ -36,7 +36,7 @@ export default function PublicNavbar({ pages, showSearch }) {
                             })}
                             {showSearch && (
                                 <li className="search-nav-item">
-                                    <form action="/search" method="GET" className="navbar-form search-form-inline">
+                                    <form action="/search" method="GET" className="search-form-inline">
                                         <div className="search-input-wrapper">
                                             <input 
                                                 type="text" 

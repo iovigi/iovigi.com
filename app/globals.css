@@ -216,26 +216,25 @@ textarea,
 
 /* Header Search Bar Styling */
 .search-nav-item {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
 }
 
 @media (min-width: 768px) {
   .search-nav-item {
+    padding-top: 24px !important;
+    padding-bottom: 24px !important;
     height: 80px;
   }
 }
 
 .search-form-inline {
-  margin: 0;
-  padding: 0 15px !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 .search-input-wrapper {
   position: relative;
-  display: flex;
-  align-items: center;
+  display: block;
 }
 
 .header-search-input {
@@ -283,10 +282,10 @@ textarea,
 
 @media (max-width: 767px) {
   .search-nav-item {
-    justify-content: flex-start;
-    padding-left: 10px;
-    margin-top: 5px;
-    margin-bottom: 5px;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+    padding-left: 0px !important;
+    padding-right: 0px !important;
   }
   .header-search-input {
     width: 100% !important;
