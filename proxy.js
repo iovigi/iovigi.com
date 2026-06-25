@@ -47,7 +47,8 @@ export async function proxy(request) {
         if (pathname.startsWith('/api/posts') || pathname.startsWith('/api/mcp')) {
             const hasApiKey = request.headers.has('x-api-key') || 
                               request.headers.has('authorization') || 
-                              request.nextUrl.searchParams.has('apiKey');
+                              request.nextUrl.searchParams.has('apiKey') ||
+                              request.nextUrl.searchParams.has('sessionId');
             if (hasApiKey) {
                 return NextResponse.next();
             }

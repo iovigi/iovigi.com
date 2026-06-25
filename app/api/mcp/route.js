@@ -58,8 +58,18 @@ export async function GET(request) {
             const requestUrl = new URL(request.url);
             const host = request.headers.get('x-forwarded-host') || request.headers.get('host') || requestUrl.host;
             const proto = request.headers.get('x-forwarded-proto') || (requestUrl.protocol.startsWith('https') ? 'https' : 'http');
-            const endpointUrl = `${proto}://${host}/api/mcp?sessionId=${sessionId}`;
-            const endpointEvent = `event: endpoint\ndata: ${endpointUrl}\n\n`;
+            
+            const endpointUrl = new URL('/api/mcp', `${proto}://${host}`);
+            endpointUrl.searchParams.set('sessionId', sessionId);
+            
+            const apiKey = request.headers.get('x-api-key') || 
+                           request.headers.get('authorization')?.replace('Bearer ', '') ||
+                           requestUrl.searchParams.get('apiKey');
+            if (apiKey) {
+                endpointUrl.searchParams.set('apiKey', apiKey);
+            }
+
+            const endpointEvent = `event: endpoint\ndata: ${endpointUrl.toString()}\n\n`;
             controller.enqueue(new TextEncoder().encode(endpointEvent));
 
             // Cache connection
