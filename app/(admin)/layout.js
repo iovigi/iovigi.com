@@ -84,6 +84,12 @@ export default function AdminLayout({ children }) {
                                             <p>Settings</p>
                                         </a>
                                     </li>
+                                    <li className="nav-item">
+                                        <a href="/admin/developer" className="nav-link">
+                                            <i className="nav-icon fas fa-code"></i>
+                                            <p>Developer & API</p>
+                                        </a>
+                                    </li>
                                 </ul>
                             </nav>
                         </div>

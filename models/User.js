@@ -10,6 +10,12 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please provide a password'],
     },
+    apiKey: {
+        type: String,
+        unique: true,
+        sparse: true,
+    },
 }, { timestamps: true });
 
 export default mongoose.models.User || mongoose.model('User', UserSchema);
+

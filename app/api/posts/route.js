@@ -1,6 +1,7 @@
 import dbConnect from '@/lib/db';
 import Post from '@/models/Post';
 import { NextResponse } from 'next/server';
+import { verifyAuth } from '@/lib/auth';
 
 export async function GET(request) {
     await dbConnect();
@@ -31,6 +32,11 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
+    const auth = await verifyAuth(request);
+    if (!auth) {
+        return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
+
     await dbConnect();
     try {
         const body = await request.json();
@@ -40,3 +46,4 @@ export async function POST(request) {
         return NextResponse.json({ success: false, error: error.message }, { status: 400 });
     }
 }
+

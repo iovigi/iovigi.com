@@ -43,6 +43,16 @@ export async function proxy(request) {
             return NextResponse.next();
         }
 
+        // Allow API routes using API keys to bypass the token check (verified in the route handler)
+        if (pathname.startsWith('/api/posts') || pathname.startsWith('/api/mcp')) {
+            const hasApiKey = request.headers.has('x-api-key') || 
+                              request.headers.has('authorization') || 
+                              request.nextUrl.searchParams.has('apiKey');
+            if (hasApiKey) {
+                return NextResponse.next();
+            }
+        }
+
         const token = request.cookies.get('admin_token')?.value;
 
         if (!token) {
