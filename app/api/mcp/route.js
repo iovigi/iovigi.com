@@ -10,10 +10,34 @@ if (!global.mcpSessions) {
 }
 const sessions = global.mcpSessions;
 
+export async function OPTIONS(request) {
+    const origin = request.headers.get('origin') || '*';
+    return new NextResponse(null, {
+        status: 204,
+        headers: {
+            'Access-Control-Allow-Origin': origin,
+            'Access-Control-Allow-Credentials': 'true',
+            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-api-key, Mcp-Session-Id',
+            'Access-Control-Expose-Headers': 'Mcp-Session-Id, X-Request-Id',
+            'Access-Control-Max-Age': '86400'
+        }
+    });
+}
+
 export async function GET(request) {
+    const origin = request.headers.get('origin') || '*';
+    const corsHeaders = {
+        'Access-Control-Allow-Origin': origin,
+        'Access-Control-Allow-Credentials': 'true',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-api-key, Mcp-Session-Id',
+        'Access-Control-Expose-Headers': 'Mcp-Session-Id, X-Request-Id'
+    };
+
     const auth = await verifyAuth(request);
     if (!auth) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders });
     }
 
     const sessionId = crypto.randomUUID();
@@ -30,8 +54,12 @@ export async function GET(request) {
             }, 30000);
 
             // Send the client the initial endpoint event so they know where to POST messages
-            // Since we want relative pathing to support any domain/port:
-            const endpointEvent = `event: endpoint\ndata: /api/mcp?sessionId=${sessionId}\n\n`;
+            // Construct the absolute endpoint URL to avoid relative path resolution bugs in clients
+            const requestUrl = new URL(request.url);
+            const host = request.headers.get('x-forwarded-host') || request.headers.get('host') || requestUrl.host;
+            const proto = request.headers.get('x-forwarded-proto') || (requestUrl.protocol.startsWith('https') ? 'https' : 'http');
+            const endpointUrl = `${proto}://${host}/api/mcp?sessionId=${sessionId}`;
+            const endpointEvent = `event: endpoint\ndata: ${endpointUrl}\n\n`;
             controller.enqueue(new TextEncoder().encode(endpointEvent));
 
             // Cache connection
@@ -56,22 +84,32 @@ export async function GET(request) {
             'Content-Type': 'text/event-stream',
             'Cache-Control': 'no-cache, no-transform',
             'Connection': 'keep-alive',
-            'X-Accel-Buffering': 'no' // Prevent buffering in IIS / Nginx proxies
+            'X-Accel-Buffering': 'no', // Prevent buffering in IIS / Nginx proxies
+            ...corsHeaders
         }
     });
 }
 
 export async function POST(request) {
+    const origin = request.headers.get('origin') || '*';
+    const corsHeaders = {
+        'Access-Control-Allow-Origin': origin,
+        'Access-Control-Allow-Credentials': 'true',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-api-key, Mcp-Session-Id',
+        'Access-Control-Expose-Headers': 'Mcp-Session-Id, X-Request-Id'
+    };
+
     const { searchParams } = new URL(request.url);
     const sessionId = searchParams.get('sessionId');
 
     if (!sessionId) {
-        return NextResponse.json({ error: 'Missing sessionId parameter' }, { status: 400 });
+        return NextResponse.json({ error: 'Missing sessionId parameter' }, { status: 400, headers: corsHeaders });
     }
 
     const session = sessions.get(sessionId);
     if (!session) {
-        return NextResponse.json({ error: 'Session not found or expired' }, { status: 404 });
+        return NextResponse.json({ error: 'Session not found or expired' }, { status: 404, headers: corsHeaders });
     }
 
     try {
@@ -81,9 +119,9 @@ export async function POST(request) {
         // and stream the output back to the SSE client
         await handleMcpMessage(message, session.controller, session.user);
 
-        return new NextResponse(null, { status: 202 }); // 202 Accepted
+        return new NextResponse(null, { status: 202, headers: corsHeaders }); // 202 Accepted
     } catch (error) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: error.message }, { status: 500, headers: corsHeaders });
     }
 }
 
