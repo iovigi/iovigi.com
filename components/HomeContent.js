@@ -3,10 +3,69 @@
 import { useLanguage } from '@/context/LanguageContext';
 import { dictionary } from '@/lib/dictionary';
 import Link from 'next/link';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
-export default function HomeContent({ posts, aboutMePage }) {
+export default function HomeContent({ posts: initialPosts, hasMore: initialHasMore, aboutMePage }) {
     const { locale } = useLanguage();
     const t = dictionary[locale] || dictionary.en;
+
+    const [posts, setPosts] = useState(initialPosts);
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(initialHasMore);
+    const [loading, setLoading] = useState(false);
+
+    const observerRef = useRef(null);
+    const sentinelRef = useRef(null);
+
+    useEffect(() => {
+        setPosts(initialPosts);
+        setHasMore(initialHasMore);
+        setPage(1);
+        setLoading(false);
+    }, [initialPosts, initialHasMore]);
+
+    const loadMore = useCallback(async () => {
+        if (loading || !hasMore) return;
+        setLoading(true);
+        try {
+            const nextPage = page + 1;
+            const res = await fetch(`/api/posts?public=true&locale=${locale}&page=${nextPage}&limit=5`);
+            const json = await res.json();
+            if (json.success && json.data) {
+                setPosts(prev => [...prev, ...json.data]);
+                setHasMore(json.hasMore);
+                setPage(nextPage);
+            }
+        } catch (error) {
+            console.error('Error fetching more posts:', error);
+        } finally {
+            setLoading(false);
+        }
+    }, [page, hasMore, loading, locale]);
+
+    useEffect(() => {
+        if (observerRef.current) {
+            observerRef.current.disconnect();
+        }
+
+        observerRef.current = new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting && hasMore && !loading) {
+                loadMore();
+            }
+        }, {
+            rootMargin: '100px',
+        });
+
+        if (sentinelRef.current) {
+            observerRef.current.observe(sentinelRef.current);
+        }
+
+        return () => {
+            if (observerRef.current) {
+                observerRef.current.disconnect();
+            }
+        };
+    }, [loadMore, hasMore, loading]);
 
     // Filter and map posts based on locale
     const visiblePosts = posts.filter(post => {
@@ -90,6 +149,19 @@ export default function HomeContent({ posts, aboutMePage }) {
                                             </div>
                                         );
                                     })}
+                                </div>
+                            )}
+
+                            {/* Infinite Scroll Sentinel & Loader */}
+                            {hasMore && (
+                                <div ref={sentinelRef} className="loading-trigger-container">
+                                    <div className="scroll-spinner"></div>
+                                    <p className="loading-text">{t.loadingMore}</p>
+                                </div>
+                            )}
+                            {!hasMore && visiblePosts.length > 0 && (
+                                <div className="no-more-posts-text">
+                                    {t.noMorePosts}
                                 </div>
                             )}
                         </div>

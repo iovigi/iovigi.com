@@ -8,15 +8,15 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const slug = searchParams.get('slug');
     const isPublic = searchParams.get('public') === 'true';
-
-    // Filter applied when fetching posts for the public front-end:
-    // only include posts whose scheduledAt is null or has already passed.
-    const schedulingFilter = isPublic
-        ? { $or: [{ scheduledAt: null }, { scheduledAt: { $lte: new Date() } }] }
-        : {};
+    const locale = searchParams.get('locale') || 'en';
+    const page = parseInt(searchParams.get('page') || '0', 10);
+    const limit = parseInt(searchParams.get('limit') || '0', 10);
 
     try {
         if (slug) {
+            const schedulingFilter = isPublic
+                ? { $or: [{ scheduledAt: null }, { scheduledAt: { $lte: new Date() } }] }
+                : {};
             const post = await Post.findOne({ slug, ...schedulingFilter });
             if (!post) {
                 return NextResponse.json({ success: false, error: 'Post not found' }, { status: 404 });
@@ -24,8 +24,48 @@ export async function GET(request) {
             return NextResponse.json({ success: true, data: post });
         }
 
-        const posts = await Post.find(schedulingFilter).sort({ createdAt: -1 });
-        return NextResponse.json({ success: true, data: posts });
+        let query = {};
+        if (isPublic) {
+            const now = new Date();
+            if (locale === 'bg') {
+                query = {
+                    $and: [
+                        { $or: [{ scheduledAt: null }, { scheduledAt: { $lte: now } }] },
+                        { 'isVisible.bg': true }
+                    ]
+                };
+            } else {
+                query = {
+                    $and: [
+                        { $or: [{ scheduledAt: null }, { scheduledAt: { $lte: now } }] },
+                        {
+                            $or: [
+                                { 'isVisible.en': true },
+                                { 'isVisible.en': { $exists: false } },
+                                { isVisible: { $exists: false } }
+                            ]
+                        }
+                    ]
+                };
+            }
+        }
+
+        let dbQuery = Post.find(query).sort({ createdAt: -1 });
+
+        if (page > 0 && limit > 0) {
+            const skip = (page - 1) * limit;
+            dbQuery = dbQuery.skip(skip).limit(limit);
+        }
+
+        const posts = await dbQuery;
+
+        let hasMore = false;
+        if (page > 0 && limit > 0) {
+            const totalCount = await Post.countDocuments(query);
+            hasMore = (page * limit) < totalCount;
+        }
+
+        return NextResponse.json({ success: true, data: posts, hasMore });
     } catch (error) {
         return NextResponse.json({ success: false, error: error.message }, { status: 400 });
     }
